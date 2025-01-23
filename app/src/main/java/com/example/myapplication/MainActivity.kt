@@ -1,6 +1,9 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,7 +26,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(viewbinding.root)
 
         var list: ArrayList<Files>? = null
-        var adapter: FileListAdapter? = null
 
         runBlocking {
             val job = GlobalScope.async {
@@ -33,7 +35,12 @@ class MainActivity : AppCompatActivity() {
             job.await()
         }
 
-        adapter = FileListAdapter(this, list)
+        // 判断有无所有文件管理权限 否则调转设置
+        if (!Environment.isExternalStorageManager()) {
+            startActivity(Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION))
+        }
+
+        val adapter: FileListAdapter? = FileListAdapter(this, list)
         val layoutManager = LinearLayoutManager(this)
         viewbinding.filelistView.layoutManager = layoutManager
         viewbinding.filelistView.adapter = adapter
