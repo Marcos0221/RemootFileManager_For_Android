@@ -78,4 +78,16 @@ class RemoteFileManager {
         })
     }
 
+    fun RemoteFileRename(fileName: String, newName: String) {
+        val client = OkHttpClient()
+        val request = Request.Builder().apply {
+            url("http://192.168.2.3:8080/file/rename/$fileName?newName=$newName")
+        }.build()
+        val response = client.newCall(request).execute()
+        if (response.isSuccessful) {
+            Log.i(TAG, "RemoteFileRename: 重命名成功")
+        }
+
+    }
+
 }
